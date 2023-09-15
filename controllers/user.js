@@ -1,6 +1,7 @@
 const modeloUsers = require("../models/user")
 const {getConnection} = require("../database/connection")
-const bcrypt = require("bcrypt")
+
+const argon = require("argon2")
 const jwt = require("../services/jwt")
 const fs = require("fs")
 const path1= require("path")
@@ -40,7 +41,7 @@ const register = async(req,res) =>{
             })
         }
         // Cifrar la contraseña
-        user.password = await bcrypt.hash(user.password, 10)
+        user.password = await argon.hash(user.password)
         // Guardar usuario en la base de datos
 
         await connection.execute(insertQuerry, [user.nick,user.name,user.email,user.password,user.role,user.image])
@@ -87,7 +88,7 @@ const login = async(req, res) =>{
         }
         
         //Comprobar la contraseña
-        let pwd = bcrypt.compareSync(params.password,rows[0].PASSWORD)
+        let pwd = await argon.verify(params.password,rows[0].PASSWORD)
 
         if (!pwd){
             return res.status(400).send({
@@ -276,7 +277,7 @@ const update = async(req, res) => {
      // Si me llega la passwd cifrarla
     if (userToUpdate.password){
         const querryUpdate = "update USER set PASSWORD = ? where NICK = ?"
-        userToUpdate.password = await bcrypt.hash(userToUpdate.password, 10)
+        userToUpdate.password = await argon.hash(userToUpdate.password)
         try{
             const connection = await getConnection();
             await connection.execute(querryUpdate,[userToUpdate.password, userIdentity.nick])
