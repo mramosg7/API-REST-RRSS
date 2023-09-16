@@ -3,7 +3,7 @@
 const express = require("express")
 const cors = require("cors")
 const modeloUsers = require("./models/user")
-const {getConnection} = require("../database/connection")
+const {getConnection} = require("./database/connection")
 
 const router = express.Router()
 
