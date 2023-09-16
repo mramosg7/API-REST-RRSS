@@ -29,25 +29,33 @@ const register = async(req,res) =>{
     // Control usuarios duplicados
 
     const querry = 'select * from USER where EMAIL = ? and NICK = ?'
-    const insertQuerry = 'insert into USER values(?,?,?,?,?,?,NOW())'
+    const insertQuerry = 'insert into USER(NICK,NAME,EMAIL,PASSWORD,ROLE,IMAGE,CREATED_AT) values(?,?,?,?,?,?,NOW())'
     try{
+        
         const connection = await getConnection();
-
+        
         const [rows, fields] = await connection.execute(querry, [user.email, user.nick])
+        
         if ( rows.length ){
             return res.status(409).json({
                 status: "error",
                 message: "Usuario ya existente"
             })
         }
+        
         // Cifrar la contraseña
-        user.password = await argon.hash(user.password)
+        passwordHas = await argon.hash(user.password)
         // Guardar usuario en la base de datos
-
-        await connection.execute(insertQuerry, [user.nick,user.name,user.email,user.password,user.role,user.image])
+        
+        await connection.execute(insertQuerry, [user.nick,user.name,user.email,passwordHas,user.role,user.image])
         
 
         await connection.end()
+        return res.status(200).json({
+            status:"succes",
+            message: "Usuario registrado",
+            
+        })
     }catch(error){
         return res.status(500).json({
             status: "error",
@@ -57,11 +65,7 @@ const register = async(req,res) =>{
     
    
 
-    return res.status(200).json({
-        message: "Accion de registro de usuarios",
-        params,
-        User :user
-    })
+   
 }
 
 const login = async(req, res) =>{

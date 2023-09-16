@@ -4,7 +4,7 @@ const express = require("express")
 const cors = require("cors")
 const modeloUsers = require("./models/user")
 const {getConnection} = require("./database/connection")
-
+const argon = require("argon2")
 const router = express.Router()
 
 
@@ -23,8 +23,10 @@ app.use(express.urlencoded({extended : true}));
 router.get("/",async(req,res)=>{
     try{
         const connection = await getConnection()
+        const has = await argon.hash("hola")
         return res.status(200).send({
-            "hola":"hola con base de datos"
+            "hola":"hola con base de datos",
+            argon : has
             })
     }catch{
         return res.status(200).send({

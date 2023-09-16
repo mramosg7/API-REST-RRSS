@@ -15,7 +15,7 @@ const save = async (req,res) =>{
     const identity = req.user
     //Guardar objeto 
     try{
-        const querry = "insert into FOLLOW values (?,?,NOW())"
+        const querry = "insert into FOLLOW(NICK,FOLLOWED,CREATED_AT) values (?,?,NOW())"
         const connection = await getConnection()
         await connection.execute(querry,[identity.nick,params.followed.toLowerCase()])
         await connection.end()
