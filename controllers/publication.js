@@ -5,8 +5,9 @@ const fs = require("fs")
 
 const save = async(req,res) =>{
     const params = req.body
+    let text = null
     let image = null;
-
+    if(params.text) text = params.text
     if (req.file){
         image = req.file.filename;
         const imageSplit = await req.file.originalname.split("\.");
@@ -35,7 +36,7 @@ const save = async(req,res) =>{
     try{
         const connection = await getConnection();
 
-        await connection.execute(querry,[params.text,image,req.user.nick])
+        await connection.execute(querry,[text,image,req.user.nick])
         await connection.end()
         return res.status(200).send({
             status:"succes",
