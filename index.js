@@ -3,8 +3,9 @@
 const express = require("express")
 const cors = require("cors")
 const modeloUsers = require("./models/user")
+const {getConnection} = require("../database/connection")
 
-
+const router = express.Router()
 
 
 // Crear servidor node
@@ -19,12 +20,25 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 
+router.get("/",async(req,res)=>{
+    try{
+        const connection = await getConnection()
+        return res.status(200).send({
+            "hola":"hola con base de datos"
+            })
+    }catch{
+        return res.status(200).send({
+        "hola":"hola sin base de datos "
+        })
+    }
+})
 
 // Cargar conf rutas
 const UserRoutes = require('./routes/user')
 const FollowRoutes = require('./routes/follow')
 const PublicationRoutes = require('./routes/publication')
 
+app.use("/api",router)
 app.use("/api/user", UserRoutes);
 app.use("/api/follow", FollowRoutes);
 app.use("/api/publication", PublicationRoutes)
