@@ -21,8 +21,7 @@ const register = async(req,res) =>{
     if(!params.name || !params.nick || !params.email || !params.password){
         return res.status(400).json({
             status:"error",
-            message:"Faltan datos por enviar",
-            params
+            message:"Faltan datos por enviar"
         })
     }
     user = new modeloUsers(params)
