@@ -183,7 +183,7 @@ const feedFollow = async(req,res)=>{
         })
     }
 }
-const feed = async(req,res)=>{
+const feedNoFollow = async(req,res)=>{
     let page = 1;
     if(req.params.page){
         page = req.params.page
@@ -219,6 +219,36 @@ const feed = async(req,res)=>{
         })
     }
 }
+
+const feed = async(req,res) =>{
+    let page = 1;
+    if(req.params.page){
+        page = req.params.page
+    }
+    const itemsPerPage = 5
+    page = parseInt(page)
+
+    const offset = (page - 1) * itemsPerPage
+    const querry = `SELECT P.TEXT text, P.FILE file, U.NICK nick,U.IMAGE avatar
+                    FROM PUBLICATION P JOIN USER U ON P.USER = U.NICK
+                    ORDER BY P.CREATED_AT DESC 
+                    LIMIT ? , ?`
+    try {
+        const connection = await getConnection();
+        const [row] = await connection.execute(querry,[offset.toString(),itemsPerPage.toString()])
+        await connection.end()
+        return res.status(200).send({
+            status: "success",
+            feed: row
+        })
+
+    }catch{
+        return res.status(500).send({
+            status: "Error",
+            message: "Error en la consulta"
+        })
+    }
+}
 module.exports = {
     save,
     detail,
@@ -226,5 +256,6 @@ module.exports = {
     userPublications,
     image,
     feedFollow,
+    feedNoFollow,
     feed
 }
