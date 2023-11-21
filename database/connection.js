@@ -1,11 +1,11 @@
 const sql = require("mysql2/promise");
 
 const connectionConfig = {
-    host: 'containers-us-west-209.railway.app',
-    port: 6595,
+    host: 'localhost',
+    port: 3306,
     user: 'root',
-    password: 'wfzlZ6I3fdvihqBTj6Uy',
-    database: 'railway'
+    password: '',
+    database: 'RRSS'
   };
 
 const getConnection = async() =>{
