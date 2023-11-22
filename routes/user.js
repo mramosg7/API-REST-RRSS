@@ -24,5 +24,5 @@ router.get("/profile/:nick", auth,UserController.profile)
 router.get("/list/:page?", auth,UserController.list)
 router.put("/update",auth,UserController.update) 
 router.post("/upload",[auth,uploads.single("file0")],UserController.upload)
-router.get ("/avatar/:file", auth,UserController.avatar)
+router.get ("/avatar/:file",UserController.avatar)
 module.exports = router;
