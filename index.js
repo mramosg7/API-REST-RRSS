@@ -12,6 +12,7 @@ const router = express.Router()
 const app = express()
 const port = 3900;
 
+
 //Configurar el cors
 app.use(cors());
 
