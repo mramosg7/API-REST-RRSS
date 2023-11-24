@@ -183,7 +183,7 @@ const feedFollow = async(req,res)=>{
         })
     }
 }
-const feedNoFollow = async(req,res)=>{
+const feedUser = async(req,res)=>{
     let page = 1;
     if(req.params.page){
         page = req.params.page
@@ -194,18 +194,32 @@ const feedNoFollow = async(req,res)=>{
     const offset = (page - 1) * itemsPerPage
 
     const nick = req.user.nick
-    const querry = `SELECT P.TEXT text, P.FILE file, U.NICK nick,U.IMAGE avatar
-                    FROM PUBLICATION P JOIN USER U ON P.USER = U.NICK
-                    WHERE USER not IN (
+    const querry = `SELECT text, file, nick, avatar, CREATED_AT
+                    FROM (
+                        SELECT P.TEXT AS text, P.FILE AS file, U.NICK AS nick, U.IMAGE AS avatar, P.CREATED_AT
+                        FROM PUBLICATION P
+                        JOIN USER U ON P.USER = U.NICK
+                        WHERE USER IN (
+                            SELECT FOLLOWED
+                            FROM FOLLOW
+                            WHERE NICK = ?
+                        )
+                        ORDER BY P.CREATED_AT DESC
+                    ) AS ResultadoSeguidos
+                    UNION
+                    SELECT P.TEXT AS text, P.FILE AS file, U.NICK AS nick, U.IMAGE AS avatar, P.CREATED_AT
+                    FROM PUBLICATION P
+                    JOIN USER U ON P.USER = U.NICK
+                    WHERE USER NOT IN (
                         SELECT FOLLOWED
                         FROM FOLLOW
                         WHERE NICK = ?
                     )
-                    ORDER BY P.CREATED_AT DESC 
+                    ORDER BY CREATED_AT DESC
                     LIMIT ? , ?`
     try{
         const connection = await getConnection()
-        const [rows] = await connection.execute(querry,[nick,offset.toString(),itemsPerPage.toString()])
+        const [rows] = await connection.execute(querry,[nick,nick,offset.toString(),itemsPerPage.toString()])
         await connection.end()
         return res.status(200).send({
             status: "succes",
@@ -256,6 +270,6 @@ module.exports = {
     userPublications,
     image,
     feedFollow,
-    feedNoFollow,
+    feedUser,
     feed
 }

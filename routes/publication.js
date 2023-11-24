@@ -20,8 +20,8 @@ router.get("/detail/:id",auth,publicationController.detail)
 router.delete("/delete/:id",auth,publicationController.deletePublication)
 router.get("/user/:nick/:page?",auth,publicationController.userPublications)
 router.get("/image/:file",publicationController.image)
-router.get("/feed/noFollow/:page?",auth,publicationController.feedNoFollow)
-router.get("/feed/follow/:page?",auth,publicationController.feedFollow)
+router.get("/feed/noFollow/:page?",auth,publicationController.feedFollow)
+router.get("/feed/user/:page?",auth,publicationController.feedUser)
 router.get("/feed/:page?",publicationController.feed)
 
 module.exports = router
